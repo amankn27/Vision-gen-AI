@@ -1,0 +1,7 @@
+{
+  "name": "VisionGen AI",
+  "description": "Multimodal visual intelligence studio for image understanding, OCR, visual Q&A, and high-fidelity image generation and transformation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

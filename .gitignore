@@ -1,0 +1,21 @@
+﻿node_modules/
+dist/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python environment
+.venv/
+__pycache__/
+*.py[cod]
+
+# Temporary files and backups
+*.backup
+*.log
+test-image.jpg
+
+# Local development metadata
+.aistudio/
+comfy_object_info.json

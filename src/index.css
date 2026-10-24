@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --vg-bg-app: #0b0d12;
+    --vg-surface-main: #11151d;
+    --vg-surface-elevated: #171c26;
+    --vg-surface-hover: #202635;
+    --vg-border: #283041;
+    --vg-border-subtle: #1e2433;
+    --vg-text-primary: #f4f6fb;
+    --vg-text-secondary: #a1a9b8;
+    --vg-text-muted: #747e91;
+    --vg-accent-primary: #8b5cf6;
+    --vg-accent-primary-hover: #7c3aed;
+    --vg-accent-cyan: #67e8f9;
+    --vg-status-success: #34d399;
+    --vg-status-warning: #fbbf24;
+    --vg-status-error: #fb7185;
+    --vg-transparency-grid: #1a1f2c;
+  }
+
+  :root[data-theme="light"],
+  .light {
+    --vg-bg-app: #f8fafc;
+    --vg-surface-main: #ffffff;
+    --vg-surface-elevated: #f1f5f9;
+    --vg-surface-hover: #e2e8f0;
+    --vg-border: #cbd5e1;
+    --vg-border-subtle: #e2e8f0;
+    --vg-text-primary: #0f172a;
+    --vg-text-secondary: #475569;
+    --vg-text-muted: #94a3b8;
+    --vg-accent-primary: #7c3aed;
+    --vg-accent-primary-hover: #6d28d9;
+    --vg-accent-cyan: #0891b2;
+    --vg-status-success: #059669;
+    --vg-status-warning: #d97706;
+    --vg-status-error: #e11d48;
+    --vg-transparency-grid: #e2e8f0;
+  }
+
+  body {
+    background-color: var(--vg-bg-app);
+    color: var(--vg-text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Geist Sans", "Inter", sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    margin: 0;
+  }
+
+  /* Custom scrollbar for clean dark/light look */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--vg-border);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--vg-text-muted);
+  }
+}
+
+/* Pattern for transparent image preview */
+.checkerboard-pattern {
+  background-image: linear-gradient(45deg, var(--vg-transparency-grid) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--vg-transparency-grid) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--vg-transparency-grid) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--vg-transparency-grid) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}

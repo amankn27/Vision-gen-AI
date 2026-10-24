@@ -1,0 +1,421 @@
+VISIONGEN AI — FRONTEND UI / UX MASTER PROMPT
+Your role
+Act as a senior product designer, UX architect, design-systems engineer, and senior React frontend developer. Help me design and implement the frontend for VisionGen AI, a serious, production-oriented multimodal image understanding and image-generation application.
+This is the frontend companion to my VisionGen AI Production Master Prompt. The product supports image upload, image understanding and description, visual question answering, OCR, object information where supported, text-to-image generation, image-to-image editing where supported, conversations, history, user settings, and authenticated user-owned data.
+The goal is not a static Figma-style mockup or a college-project dashboard. Build a visually excellent, fast, accessible, responsive, genuinely interactive frontend that connects to the real backend. Do not pretend features work when the API or selected model does not support them. Do not invent users, analytics, model status, job progress, generated images, accuracy scores, or success messages.
+Work incrementally. First inspect the existing repository, package versions, routes, API schemas, authentication approach, and current phase. Reuse the existing stack and conventions where sensible. Do not replace working code or change API contracts without explaining why and receiving approval. If backend functionality is not ready, establish typed API adapters and clear loading/error/unsupported states; do not silently substitute fake responses in the application.
+1. PRODUCT EXPERIENCE AND DESIGN DIRECTION
+Design VisionGen AI as a premium visual intelligence studio: calm, confident, modern, and focused on images. It should feel closer to a carefully crafted creative AI workspace than a generic admin dashboard.
+The experience must communicate three primary workflows clearly:
+Understand an image — upload an image, inspect its visual content, ask questions, and extract text.
+Generate an image — write a prompt, choose supported settings, generate, inspect and download the result.
+Transform an image — supply a source image and describe the changes; preserve a clear connection between source and result.
+Design principles:
+Make the user's image or generated result the visual focus.
+Give the interface generous spacing, clear hierarchy, strong typography, and consistent alignment.
+Prefer a few useful controls over a screen crowded with settings.
+Use visible borders and restrained elevation to establish hierarchy; avoid excessive glassmorphism, neon glows, gradients everywhere, and distracting background animation.
+Every control must have a real purpose. If an operation is unsupported or unavailable, disable it with a useful explanation instead of making it look functional.
+Keep important actions obvious, labels concise, and advanced controls progressively disclosed.
+Make loading, failure, cancellation, empty, offline, queued, and completed states part of the design—not afterthoughts.
+The product must remain beautiful with real user images of very different dimensions, including portrait images, wide landscapes, screenshots, documents, and transparent PNGs.
+Visual identity
+Use a polished dark-first interface with a complete light theme. The default theme can be dark, but remember the user's preference. Both themes must be fully designed—not merely inverted colors.
+Suggested dark theme tokens (adjust only for contrast or consistency):
+App background: #0B0D12
+Main panel/surface: #11151D
+Elevated surface: #171C26
+Hover surface: #202635
+Borders/dividers: #283041
+Primary text: #F4F6FB
+Secondary text: #A1A9B8
+Muted/placeholder text: #747E91
+Primary accent: #8B5CF6 (violet)
+Secondary accent: #67E8F9 (cyan, used sparingly)
+Success: #34D399
+Warning: #FBBF24
+Error/destructive: #FB7185
+Create equivalent light theme tokens with a very light neutral page background, white/off-white surfaces, readable dark text, clear dividers, and the same accent identity. Use semantic CSS variables rather than sprinkling hard-coded colors across components. Verify WCAG AA contrast for text and important controls in both themes. Never communicate status by color alone.
+Typography: use a professional UI font such as Inter or Geist with sensible system fallbacks. Use a strong, readable scale: clear page titles, medium section headings, comfortable body text, and legible metadata. Avoid oversized headings on every card. Body text should normally be around 14–16 px; labels and metadata must remain readable.
+Shape and depth: consistent 10–16 px corner radii for cards and panels, slightly smaller radii for controls, subtle shadows only where they help layering, and one consistent spacing scale. Keep borders quiet but visible.
+Icons: use one consistent icon family such as Lucide. Use icons with visible labels for primary navigation and important actions. Avoid emoji as functional icons, mixed icon styles, or mystery buttons without accessible names.
+Brand mark: create a simple custom VisionGen symbol using a geometric aperture/frame/spark motif that suggests a lens and generated light. Keep it minimal and scalable. Do not copy another product's logo. Pair the mark with the “VisionGen AI” wordmark. Use the same mark for the favicon if feasible.
+2. APPLICATION SHELL AND GLOBAL NAVIGATION
+Build a consistent app shell shared by every authenticated page.
+Desktop layout
+Left sidebar around 240–260 px expanded, optionally collapsible to about 72–80 px.
+Main content fills the remaining width without horizontal overflow.
+A slim top bar contains breadcrumb/page context, a theme toggle, and account/profile actions. Include a genuine backend/service status indicator only if a real readiness/status endpoint exists.
+Main content should have a sensible maximum width where appropriate, but image workspaces may use the available width.
+Use a consistent page gutter and vertical rhythm. Do not put every content group inside a separate card; use cards only when they establish a useful boundary.
+Sidebar information architecture
+Primary navigation:
+Overview — home/workspace landing page.
+Analyze image — upload, inspect, ask questions, and extract text.
+Generate — text-to-image and image-to-image workflows, when supported.
+History — previous analyses and generated results.
+Secondary links:
+Settings — appearance, account/security options supported by the backend, privacy and data controls if implemented.
+Help/documentation link only when a real destination exists.
+The sidebar should include:
+Logo and product name at the top.
+A prominent “New analysis” or “New session” action.
+Active-route indicator with accessible state.
+Helpful hover/focus states and tooltips only when a collapsed icon-only navigation requires them.
+Account/profile area at the bottom when authentication is implemented.
+Do not display billing, plan limits, team management, notifications, or other product modules unless implemented. Do not show fake “Pro” badges or hard-coded account information.
+Global interaction behavior
+Keep navigation selection in sync with the URL using the existing router or React Router if already used.
+Preserve safe draft state when navigating where practical; warn before abandoning unsaved prompts only when that warning prevents meaningful data loss.
+Use a consistent toast system for brief success/failure feedback, but do not use toasts as the only way to communicate important errors.
+Confirm destructive actions such as deleting conversations or generated images. The confirmation must identify what is being deleted.
+Disable repeat submission while a request is actively being submitted. Use idempotency/backend protection where required; frontend disabling alone is not a reliability guarantee.
+Provide a visible way to recover from errors, such as Retry, Edit prompt, Re-upload, or Back to history, depending on the failure.
+3. SCREENS AND EXACT UX REQUIREMENTS
+A. Authentication screens
+Build sign-up, sign-in, sign-out, and password-reset screens only to the extent supported by the actual authentication backend.
+Visual direction:
+Focused, spacious layout with the VisionGen mark, a short product statement, and a compact form.
+Optional decorative visual on wide screens using CSS shapes or an existing, licensed project asset; it must not overpower the form or slow loading.
+On mobile, use a single-column form with comfortable spacing.
+Correct input labels, password visibility control, inline validation, submit loading states, and clear server error messages.
+Support keyboard submission, focus visibility, and password managers/autofill.
+Do not store credentials or expose tokens in unsafe browser storage. Follow the authentication design chosen by the backend; prefer secure HttpOnly-cookie sessions when compatible with the architecture.
+Do not create fake email verification, reset-success, or login-success flows. Reflect actual API responses and clearly explain next steps.
+B. Overview / home dashboard
+The Overview page should be a useful workspace, not a fake analytics dashboard.
+Suggested hierarchy:
+A concise welcome headline such as “Your visual workspace” and a brief explanation of what VisionGen can do.
+Two or three primary action tiles:
+Analyze an image
+Generate an image
+Transform an image
+Each tile has a clear icon, short description, hover/focus state, and navigation action.
+A large, elegant upload dropzone that invites a user to drag an image in or browse files, if quick image analysis is a key workflow.
+A Recent activity section loaded from the real history API. Each row/card should show a real thumbnail where permitted, a useful title or prompt summary, task type, timestamp, and actual state. If no history exists, render a designed empty state with a clear first action. Never seed fake recent activity in production.
+Optionally display current service availability only if backed by a real health/readiness source; avoid fake uptime, throughput, model accuracy, usage charts, and invented counts.
+Keep the first screen clean and scannable. Do not show multiple redundant upload areas competing for attention.
+C. Analyze image workspace
+This is the core product screen. Design it as a focused, professional image-analysis studio.
+Before upload
+Page title and one-line description.
+A high-quality drag-and-drop dropzone with a clear border, restrained accent on hover/drag-over, image icon, “Drop an image here”, supported formats, and maximum file size sourced from real configuration when available.
+A browse-files action that works with keyboard and screen readers.
+Supported formats: JPG/JPEG, PNG, WEBP, with a clear validation message for rejected files.
+Explain upload limits without exposing internal paths or implementation details.
+Make drag-over, upload-in-progress, upload-success, unsupported-format, oversize-file, corrupt-file, offline, and retry states visually distinct.
+After upload
+Use a responsive two-pane workspace on wide displays:
+Image canvas pane: show the uploaded image in a neutral contained canvas using object-fit: contain; never distort its aspect ratio. Include the image name, dimensions/file size where available, replace/remove control, and a small set of useful zoom/fit controls only if correctly implemented.
+Analysis pane: includes action controls, result sections, and the conversation UI.
+On medium screens, reduce panel widths and let panes stack when needed. On mobile, use a compact image preview and a clean tab/segmented-control pattern for Image, Results, and Chat rather than cramming two columns into a narrow viewport.
+Main actions
+Provide clearly labeled actions that correspond to real backend capabilities:
+Describe image
+Ask a question
+Extract text (OCR)
+Identify objects (only claim detection or bounding boxes if a real detector is integrated)
+Summarize
+Detailed analysis
+Use an action toolbar or tabs with one clear primary action and appropriate secondary actions. Do not expose six equally prominent buttons if that makes the UI noisy. Group related actions thoughtfully; tooltips may explain specialist actions.
+Results presentation
+Present descriptions and answers in readable content blocks with good line length.
+If structured information is returned, display real structured fields using clear labels rather than dumping raw JSON.
+OCR results should appear in a dedicated readable panel with a Copy text action, selection-friendly text, and a clear empty/no-text-found state. Show confidence only when the OCR engine provides a meaningful confidence measure.
+Object results must match what the backend actually returns. If only free-form VLM descriptions are implemented, label them “Visual observations” or similar—not “Detected bounding boxes”.
+Give model name/version and processing time a quiet “Details” or metadata area when those fields actually exist.
+Offer copy, retry, and relevant next actions; provide accessible feedback when content is copied.
+Avoid unnecessary charts and arbitrary confidence meters.
+Image Q&A chat
+Display the current image context clearly so users know which image they are discussing.
+Render user and assistant messages with clear visual distinction, readable spacing, and appropriate wrapping for long content.
+Add a composer anchored at the bottom of the chat panel where possible. It should grow to a reasonable maximum height and remain usable on mobile when the software keyboard opens.
+Enter submits only if that behavior is accessible and documented; Shift+Enter inserts a new line where supported. Always include a visible send button.
+Support sending state, disable duplicate sends, preserve message history, and scroll intelligently without forcibly jumping users who are reading earlier messages.
+During inference, show an honest state such as “Waiting in queue” or “Analyzing image…” from real job data. Do not invent token-by-token streaming if the backend does not stream.
+Provide useful suggested questions in a new/empty conversation, e.g. “Describe the scene”, “Read the text”, “What stands out?”. Suggestions must be clickable and populate or submit the real question.
+Render safe Markdown in assistant responses if supported. Sanitize any rendered HTML; do not allow model output to execute scripts.
+Allow a new image/session to be started without confusing the current conversation. Confirm before abandoning work only when needed.
+“Create image from this image” flow
+Provide an action near the image or results to move into image transformation.
+Carry the selected source image and prompt context into the Generate/Transform page using an explicit source-image reference, not a copied data URL in route parameters.
+Make it obvious which source image will be transformed. Let users replace it before submitting.
+Do not promise preservation of every image detail; image-to-image behavior depends on the selected model.
+D. Image generation and transformation studio
+Give image generation its own workspace. The layout should prioritize prompt writing and a large result canvas.
+Desktop layout
+A left-side Generation controls panel, roughly 320–380 px, with a comfortable form layout.
+A large right-side Preview / results canvas taking the remaining width.
+On mobile and narrow tablets, controls appear above the result canvas; use accordions for secondary settings where helpful. Never force horizontal scrolling.
+Mode selection
+At the top, make the two workflows explicit:
+Text to image
+Image to image / Transform (only if supported by the selected model)
+Switching modes should retain prompt text when reasonable, but clearly update required fields and validation. In transform mode, show a source-image picker/preview with Replace and Remove actions.
+Prompt composer
+A well-sized, multiline prompt input with a useful placeholder that demonstrates specificity, e.g. “A quiet mountain village at blue hour, soft mist, cinematic wide shot…”.
+Character count only if a real limit exists.
+Optionally provide prompt examples as selectable chips or a small “Try an idea” section. These are examples, not generated content.
+Keep the main Generate button visually prominent. Show an honest disabled state when required input is missing or a job is active.
+Do not silently rewrite the prompt. If a prompt enhancement feature is added later, label it clearly and let the user review the revised prompt.
+Settings
+Expose only parameters supported by the chosen API/model:
+Aspect ratio or width/height presets.
+Negative prompt only when supported.
+Number of inference steps or quality preset only when supported.
+Guidance scale only when supported.
+Seed, with an option to randomize/reuse only if implemented correctly.
+Strength/denoising strength only in image-to-image mode and only if supported.
+An “Advanced settings” disclosure for less common parameters.
+Provide good defaults rather than forcing beginners to configure every parameter. Validate limits from backend capabilities; do not let a user request unsupported dimensions or settings.
+Generation states
+Design and implement distinct states:
+Ready / no result yet.
+Queued.
+Loading model, if this is a real reported stage.
+Generating.
+Saving result.
+Succeeded.
+Failed with safe, actionable error text.
+Cancelled, if cancellation is supported.
+If numeric progress is not provided by the worker, use a restrained indeterminate progress animation and truthful stage labels. Never fabricate “73% complete”. The interface must remain responsive while a job runs.
+Result view
+Render the result in a large contained canvas with correct aspect ratio and a background that works for transparent images when relevant.
+Provide practical actions: Download, Generate another variation, Use as source, Copy prompt, View details, and Delete where supported.
+Display the prompt and meaningful settings/model metadata in a collapsible details area.
+Do not claim that “Generate variation” preserves a seed or source image unless the backend does that.
+Handle failed downloads and expired/private URLs gracefully.
+Include a result gallery/history loaded from actual persisted records; pagination or incremental loading is required rather than returning unlimited records.
+E. History
+Design History as a searchable, filterable, responsive gallery/list of real user-owned work.
+Required features:
+Tabs or filters for all, image analyses, generations, and transformations—only where records can be distinguished reliably by the API.
+Search by prompt/title only if supported by the API; otherwise search the loaded data without implying server-wide search.
+Sort controls only for supported fields (for example, most recent).
+Thumbnail grid on wide screens; responsive list/grid on narrow screens.
+Each item shows a thumbnail, task type, concise prompt/title, date/time, and honest task status.
+Clicking an item opens its actual saved detail or restores that session if supported.
+Useful empty state with actions to Analyze or Generate.
+Loading skeletons, retryable errors, pagination/infinite scrolling with proper bounds, and a no-results state.
+Delete with a confirmation dialog and update the UI only when the backend confirms deletion (or explicitly roll back optimistic UI if a request fails).
+Never display fake sample history in production. Any development fixture data must be visibly gated to a test/demo mode and kept out of normal production flows.
+F. Settings
+Use grouped settings sections with short descriptions and predictable controls:
+Appearance: Light / Dark / System theme; persistence must work.
+Account and security: only the operations actually supported by the auth backend.
+Privacy and data: explain file handling/retention and offer delete/export controls only if they are implemented end-to-end.
+Model/runtime information: read-only model/provider details and feature availability from the backend when available. Do not expose secrets, local filesystem paths, or internal server diagnostics.
+Preferences: sensible defaults for generation if the backend supports persisted preferences.
+Avoid displaying settings that do nothing. A control must update persisted state or be clearly identified as unavailable/not yet supported and omitted from the shipped UI.
+G. Error, offline, empty and edge states
+Design a shared set of reusable patterns for:
+Backend unreachable / network offline.
+Session expired / user not authorized.
+Unsupported image format.
+File too large or dimensions/pixel count beyond safe limits.
+Corrupt image.
+Rate limit or queue full.
+Model unavailable or still loading.
+Out-of-memory / inference failure.
+Job timeout, cancellation, or stale job.
+Missing or deleted history item.
+Expired/invalid download URL.
+Empty analysis/OCR result.
+Empty history and search with no matches.
+Messages should explain what happened in plain language and give the next best action. Never show raw stack traces, database errors, private paths, credentials, or full provider error bodies. Use stable server error codes where available. Keep an error near the affected component and optionally add a toast for awareness.
+4. RESPONSIVE DESIGN SPECIFICATION
+The application must be usable—not merely smaller—at desktop, laptop, tablet, and mobile sizes.
+Use mobile-first CSS and practical breakpoints, adapting to the current codebase where existing breakpoints already exist. Suggested starting points:
+Small mobile: 320–389 px
+Mobile: 390–767 px
+Tablet: 768–1023 px
+Desktop: 1024–1439 px
+Wide desktop: 1440 px and above
+Small/mobile behavior
+Replace the permanent desktop sidebar with a compact header plus accessible slide-over navigation or a carefully designed bottom navigation for the four main destinations. Avoid showing both if it creates clutter.
+Use full-width controls with touch targets ideally around 44×44 CSS pixels.
+Stack all multi-column layouts. For Analyze, use a compact image preview and tabs/segments for Image, Results, and Chat.
+For Generate, place prompt and essential settings before the result. Put advanced settings in a disclosure.
+Make dialogs fit the viewport; use full-screen sheets or near-full-height modals when appropriate. Keep the close/back action visible.
+Avoid horizontal scrolling, clipped menus, controls hidden behind the virtual keyboard, and fixed footers that cover content.
+Images must scale within the available width and height while preserving aspect ratio.
+Tablet behavior
+Collapse the sidebar or make it a drawer when width is constrained.
+Use side-by-side panels only when each panel remains comfortably usable.
+Allow generation controls to become a top panel or collapsible section.
+Desktop behavior
+Use available width for the image workspace and generation preview.
+Keep reading line lengths comfortable; do not stretch text paragraphs across an ultrawide screen.
+Ensure side panels can scroll independently only when that improves usability, without trapping keyboard focus.
+Test at minimum 320, 375, 390, 768, 1024, 1280, and 1440 px widths. Test landscape mobile/tablet behavior and long prompt/error text. Check for horizontal overflow, clipped dialogs, overlapping content, and unreachable controls.
+5. MOTION, FEEDBACK, AND MICRO-INTERACTIONS
+The app should feel smooth and polished, but animation must support understanding instead of showing off.
+Use consistent transitions, generally around 140–220 ms for hover/focus/press and 180–280 ms for small panel/route transitions.
+Prefer opacity and small transform changes over expensive layout animation.
+Animate sidebar collapse, dropdown/sheet open/close, tab changes, toasts, and new result appearance subtly.
+Use skeletons for known content layouts and an indeterminate loader for unknown-duration model tasks. Do not leave blank panels with no feedback.
+Clearly show hover, pressed, focus-visible, selected, disabled, busy, and validation states.
+Add drag-over visual feedback to upload areas.
+Avoid infinite decorative animation. Limit shimmer use and do not animate every card on page load.
+Respect prefers-reduced-motion. If reduced motion is enabled, remove nonessential movement and use simple state changes.
+Use a centralized toast/notification utility, with keyboard/screen-reader announcements as appropriate. Toasts should not disappear before the user has time to read them.
+Make clipboard actions confirm success visibly and accessibly.
+6. ACCESSIBILITY AND QUALITY
+Treat accessibility as a release requirement.
+Target WCAG 2.2 AA where applicable.
+Use semantic headings, landmarks, lists, buttons, links, labels and form controls.
+All workflows must be usable with a keyboard. Provide clear focus-visible styling and sensible tab order.
+Use accessible names for icon-only controls and include tooltips where they materially help.
+Use appropriate live regions for job status, validation errors and important updates without announcing every tiny change.
+Do not use color alone to show error, success, active selection, or job state.
+Ensure sufficient contrast in both themes, readable text, and useful zoom behavior.
+Dialogs and drawers must manage focus correctly, close by keyboard where appropriate, and return focus to the triggering control.
+Upload input must be accessible without drag and drop.
+Use reduced-motion preferences and avoid flashing content.
+Add useful alt text for meaningful UI imagery; decorative images should not create noise for assistive technology.
+Test basic screen-reader semantics and keyboard-only navigation for sign-in, upload, analyze/chat, generate, history delete and theme change.
+7. FRONTEND ENGINEERING REQUIREMENTS
+Use the existing stack wherever possible. The known baseline is React + Vite. Tailwind CSS is preferred if the project already uses it or if it can be added without disrupting working code; otherwise use a consistent CSS Modules or modern CSS token approach. Do not introduce multiple styling systems.
+Recommended choices only where they fit the existing repository:
+React Router for routing.
+TypeScript for new frontend code if it can be introduced consistently; do not convert a large working project without a reason.
+Lucide React for icons.
+TanStack Query or the existing data-fetching layer for server state, cache invalidation and loading/error lifecycle.
+React Hook Form + Zod only if the complexity justifies them and they are compatible with the project.
+A consistent accessible component foundation such as the project's existing library or Radix-based primitives. Do not mix several component systems.
+A small motion library only if needed; CSS transitions are enough for most details.
+Frontend architecture
+Keep responsibilities separated. A reasonable structure is:
+code
+Text
+frontend/src/
+  app/
+    router.tsx
+    providers.tsx
+  components/
+    layout/
+    navigation/
+    ui/
+    feedback/
+    upload/
+    image/
+    chat/
+    generation/
+    history/
+  features/
+    auth/
+    overview/
+    analysis/
+    generation/
+    history/
+    settings/
+  services/
+    api-client.ts
+    auth-api.ts
+    vision-api.ts
+    generation-api.ts
+    conversations-api.ts
+    history-api.ts
+  hooks/
+  types/
+  styles/
+  App.tsx
+  main.tsx
+Adapt this to the existing project rather than creating unnecessary folders solely to match this example.
+Implementation rules:
+Keep API calls out of presentation components where practical.
+Put base URL/configuration in environment variables such as VITE_API_BASE_URL; never hard-code a production URL or secret.
+Use typed request/response contracts aligned with the backend's actual OpenAPI schema.
+Centralize authentication handling, request IDs where available, error mapping, cancellation, and timeouts in the API client.
+Use abort/cancellation mechanisms when leaving a page or replacing an active request where appropriate; do not let old responses overwrite newer state.
+Model long-running tasks with explicit typed job states (queued, running, succeeded, failed, cancelled) that match the backend contract. If the backend uses different names, create a deliberate adapter.
+Keep server state separate from local UI state. Do not duplicate backend truth unnecessarily in component state.
+Preserve generated/image URLs as opaque URLs received from the API; do not expose private storage paths or construct unauthorized file URLs.
+Use optimistic updates only where rollback is defined and tested.
+Use meaningful component names and small maintainable components; avoid an enormous single App.jsx file.
+Do not suppress TypeScript/ESLint errors to make builds pass.
+Do not add dependencies without stating why they are needed.
+Use environment-based feature/capability flags only when they correspond to a real backend configuration. Do not use a hard-coded flag to simulate production readiness.
+Frontend testing
+Add suitable tests for:
+navigation and route protection;
+sign-in validation and error states;
+file validation/dropzone behavior;
+image replacement/removal and preview sizing;
+analysis results, OCR copy action, and chat submission;
+generation form validation, job state transitions, failure and retry;
+history pagination/filter/delete;
+mobile navigation and responsive panels;
+theme persistence;
+accessibility basics and keyboard interactions.
+Add at least one browser end-to-end test for the main journey using Playwright or the existing E2E tool. Use test fixtures or mocked API calls only in tests, with a clear boundary from production runtime. CI should not download large AI models just to test the frontend.
+8. API INTEGRATION RULES
+Before wiring screens, inspect the real backend routes, schemas, OpenAPI specification, authentication and job-state contract. Produce a short mapping table: UI action → API endpoint → response fields → loading/error behavior.
+Use real backend data for history, job states, image metadata, analysis results, and model capabilities.
+If an endpoint is missing, state that fact and build the UI so it handles the unavailable capability cleanly. Do not fabricate a successful response.
+Do not invent a response schema that conflicts with the backend. If a frontend contract needs a backend change, propose the change and wait for approval before changing the API.
+Use the backend's real max upload limit and supported formats when exposed; otherwise set a documented frontend fallback while the backend remains authoritative.
+Use job polling, SSE or WebSockets only as supported by the backend. Stop polling on terminal states, page disposal, sign-out, or job cancellation; use backoff and error handling.
+Prevent users from accessing another user's images or job results by URL/ID; rely on server-side authorization, and include frontend route guards only as a usability layer.
+Correctly handle 401/403, 404, 413, 422, 429 and 5xx responses.
+Never put tokens, secrets, raw file content, or private prompts in query parameters or analytics logs.
+Use URL.createObjectURL only for local previews when appropriate and revoke object URLs to avoid memory leaks.
+Handle private/expiring download links without making the UI assume that every URL is public forever.
+9. PERFORMANCE AND POLISH
+Keep initial JavaScript bundle reasonable; lazy-load noncritical routes/screens when justified.
+Avoid loading huge image thumbnails at full resolution. Use backend thumbnails or appropriate sizes when supported.
+Use stable dimensions/aspect ratios for image cards to reduce layout shift.
+Render long histories efficiently with pagination; virtualization is optional and should be justified by measured need.
+Do not rerender the entire chat/history view for unrelated input changes.
+Use responsive image rendering and avoid expensive blur/filter effects over large image areas.
+Handle object URL cleanup, event-listener cleanup, aborted fetches and stale job polling.
+Prevent layout shift when fonts or result images load.
+Verify the production build; do not rely only on the development server.
+Report actual Lighthouse/Core Web Vitals or performance tests only if run. Do not invent scores.
+10. IMPLEMENTATION WORKFLOW — BUILD IN CONTROLLED PHASES
+Do not generate the whole frontend in a single giant code dump. Follow these phases, adjusted to the current repository and backend readiness.
+Frontend Phase UI-0 — Repository and contract review
+Inspect existing files, dependencies, routes, CSS, API schemas, authentication and job lifecycle.
+Summarize what already exists and what should be reused.
+Produce a concise design system specification: color tokens, typography, spacing, layout, component style, breakpoints and motion.
+Produce a screen/component map and a UI action → API contract table.
+Identify missing backend capabilities that affect the UI.
+Provide a prioritized implementation plan and acceptance criteria.
+Do not make large code changes until I approve this plan.
+Frontend Phase UI-1 — Design foundations and application shell
+Implement theme tokens, typography, reset/base styles, buttons, fields, cards, badges, tabs, dialogs, toasts, tooltips, skeletons, responsive app shell, sidebar/topbar, routing, not-found state and theme persistence. Verify both light and dark themes.
+Frontend Phase UI-2 — Authentication and Overview
+Implement the auth screens that correspond to the backend, responsive overview, primary workflow tiles, upload shortcut, real recent history, empty/loading/error states and route protection.
+Frontend Phase UI-3 — Analyze workspace
+Implement secure upload UI, drag/drop, validation, preview, replace/remove, analysis actions, result sections, OCR panel, image-context chat, real job lifecycle feedback, copy actions, and transition to image transformation.
+Frontend Phase UI-4 — Generate / Transform studio
+Implement text-to-image and supported image-to-image mode, prompt composer, capability-aware controls, source image preview, job states, result viewer, result actions, and persisted generation history.
+Frontend Phase UI-5 — History and Settings
+Implement real history with pagination/search/filter where supported, item detail/reopen, deletion confirmation, appearance settings, account/privacy/settings controls only where backed by actual functionality.
+Frontend Phase UI-6 — Responsive, accessibility, tests, and polish
+Test all target screen sizes, keyboard flows, both themes, loading/empty/error states, API failures, route protection, focus handling, production build, frontend tests and at least one E2E flow. Fix defects rather than documenting avoidable regressions.
+After each phase, report:
+What changed and why.
+Exact files created/modified.
+Commands to run and build on Windows PowerShell.
+Tests actually run and real pass/fail results.
+Manual verification steps.
+Screens and viewport sizes verified.
+Known defects, missing API capabilities, and remaining work.
+Acceptance checklist with evidence.
+Wait for my confirmation before the next major phase. If a test was not run, say so. Do not call the UI production-ready merely because it looks attractive in one screenshot.
+11. DEFINITION OF DONE FOR THE FRONTEND
+The frontend is ready for release review only when:
+All in-scope pages are implemented and wired to the real API contracts.
+No primary button is inert and no form silently fakes success.
+All long-running tasks show truthful server-backed states or honest indeterminate states.
+Authenticated routes and data operations respect the backend's ownership model.
+Loading, empty, validation, offline, failure, retry, deleted-item and unsupported-capability states are covered.
+Desktop, tablet and mobile layouts work at the specified viewport widths with no horizontal overflow or inaccessible controls.
+Both themes are polished, persisted, readable and contrast-checked.
+Keyboard navigation, focus indicators, accessible labels, dialogs, upload and job announcements are tested.
+Frontend unit/component tests, a main-path E2E test, lint/type checks where configured, and a production build have been run with results recorded.
+No fake production activity, sample users, invented metrics, false status indicators, hard-coded successful AI responses, or visible developer placeholders remain.
+The README explains frontend environment variables, API setup, development, tests, production build, and known limitations.
+START NOW
+Begin with Frontend Phase UI-0 — Repository and contract review. Inspect the current VisionGen AI project and the production master prompt. Then present the design system, screen layouts, responsive strategy, backend API mapping, key UI states, implementation order, and acceptance criteria. Make recommendations confidently, but do not overwrite existing working code or start a large implementation before reporting what you found. Once the review is complete, ask me to approve the plan before Frontend Phase UI-1.
